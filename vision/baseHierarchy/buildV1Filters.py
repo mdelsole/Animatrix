@@ -59,7 +59,7 @@ def buildV1filters(orientations, rfsizes, div):
             f = f/np.sqrt(np.sum(f**2))
 
             # Ith filter
-            iFilter =  numOrientations*(k-1) + o
+            iFilter = numOrientations*(k-1) + o
             filters[1:(filterSize**2)][iFilter] = np.reshape(f, (filterSize**2, 1))
             filterSizes[iFilter] = filterSize
 
