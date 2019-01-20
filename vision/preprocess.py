@@ -14,9 +14,9 @@ print("Building V1 Filters")
 # 4 orientations for gabor filters
 orientations = np.array([90, -45, 0, 45])
 # Initialize the different receptive field sizes
-rfsizes = np.arange(7, 39, 2)
+rfsizes = np.arange(7, 41, 2)
 # Initialize scaling factors, tuning the wavelength of the sinusoidal factor 'lambda' in relation to each of the rfsizes
-div = np.arange(4, 3.2, -0.05)
+div = np.arange(4, 3.195, -0.05)
 buildV1Filters.buildV1filters(orientations, rfsizes, div)
 
 
