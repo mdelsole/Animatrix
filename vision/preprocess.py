@@ -21,7 +21,7 @@ buildV1Cells.buildV1Cells(orientations, rfsizes, div)
 
 print("Building C1")
 # Defining 8 scale bands
-c1Scale = np.arange(1, 20, 2)
+c1Scale = np.arange(1, 18, 2)
 # Defining spatial pooling range for each scale band
 c1Space = np.arange(8, 24, 2)
 
