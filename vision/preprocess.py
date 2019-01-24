@@ -3,6 +3,8 @@
 import numpy as np
 import cv2
 from vision.baseHierarchy import buildV1Cells
+from vision.baseHierarchy import buildV2Cells
+
 
 filename = "/Users/Michael/Documents/Animatrix/testImages/lena.jpg"
 
@@ -21,7 +23,6 @@ buildV1Cells.buildV1Cells(orientations, rfsizes, div)
 
 print("Building C1")
 # Defining 8 scale bands
-c1Scale = np.arange(1, 18, 2)
+v2Scale = np.arange(1, 18, 2)
 # Defining spatial pooling range for each scale band
-c1Space = np.arange(8, 24, 2)
-
+v2Space = np.arange(8, 24, 2)

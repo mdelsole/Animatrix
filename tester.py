@@ -1,8 +1,7 @@
 import numpy as np
 
-c1Scale = np.arange(1,18,2)
+# Defining 8 scale bands
+c1Scale = np.array([2, 2, 3, 0, 1, 2, 3, 4, 5])
 print(c1Scale)
-nBands= np.size(c1Scale)-1
-nScales=c1Scale[-1]-1
-print(nBands)
-print(nScales)
+c1Scale[np.where(c1Scale == 0)] = 1
+print(c1Scale)
