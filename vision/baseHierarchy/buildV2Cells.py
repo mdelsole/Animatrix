@@ -24,7 +24,7 @@ def buildV2Cells(img, filters, filterSizes, v2Space, v2Scale, v2Overlap, include
     nBands = np.size(v2Scale)-1
     # Last element in c1Scale is max scale + 1
     nScales = v2Scale[-1]-1
-    nFilters = math.floor(np.size(filterSizes)/nScales)
+    nFilters = int(math.floor(np.size(filterSizes)/nScales))
 
     scalesInThisBand = []
     # Define the scale bounds of each band
@@ -55,4 +55,10 @@ def buildV2Cells(img, filters, filterSizes, v2Space, v2Scale, v2Overlap, include
 
     # Next, apply filters
     iUFilterIndex = 0
+    s1 = []
+    for iBands in range(nBands):
+        for iScale in range(len(scalesInThisBand)):
+            for iFilt in range(nFilters):
+                iUFilterIndex += 1
+
 
