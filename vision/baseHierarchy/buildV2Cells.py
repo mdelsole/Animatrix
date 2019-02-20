@@ -53,12 +53,29 @@ def buildV2Cells(img, filters, filterSizes, v2Space, v2Scale, v2Overlap, include
         # To avoid a divide by zero later
         s1Norm[i][np.where(s1Norm == 0)] = 1
 
-    # Next, apply filters
+    # Then, apply filters
     iUFilterIndex = 0
     s1 = []
     for iBands in range(nBands):
         for iScale in range(len(scalesInThisBand)):
             for iFilt in range(nFilters):
                 iUFilterIndex += 1
+                #Finish Later
 
+    # Calculate Local Pooling
 
+    # First, pool over scales within band
+    # For each band (range)
+    for iBand in range(nBands):
+        # For each filt in each band
+        for iFilt in range(nFilters):
+            # Finish later
+            i = 1
+
+    # Then, pool over local neighborhood
+    for iBand in range(nBands):
+        # Fix poolRange
+        poolRange = (v2Space(iBand))
+        for iFilt in range(nFilters):
+            # Finish later
+            i = 1
