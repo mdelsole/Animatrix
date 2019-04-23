@@ -1,16 +1,18 @@
 import math
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 # View whole array, for debugging purposes
 np.set_printoptions(threshold=np.nan)
 
 """
-Builds the dictionary of S1 features
-This method returns an array of S1 (Gabor) filters. Each Gabor filter is a square 2D array. The inner loop runs through 
+Builds the dictionary of V1 simple cells
+This method returns an array of simple Gabor filters. Each Gabor filter is a square 2D array. The inner loop runs through 
 orientations (4 orientations per scale) while the outer loop runs through scales
 """
 
 
-def buildV1Cells(orientations, rfsizes, div):
+def v1SimpleCells(orientations, rfsizes, div):
 
     numOrientations = np.size(orientations)
     numRfsizes = np.size(rfsizes)
@@ -35,21 +37,22 @@ def buildV1Cells(orientations, rfsizes, div):
             # Center of filter, i.e. midpoint
             center = int(math.ceil(filterSize/2))
             # Size on the left and right. Used for location. -1 b/c coordinates start at 0
-            filterSizeL = center-1
-            filterSizeR = filterSize-filterSizeL-1
+            filterSizeL = center
+            filterSizeR = filterSize-filterSizeL
             # Lambda = wavelength
             lmbda = (filterSize*2)/div[k]
             # Lower sigma = sharper edged filters, higher sigma = blurry edged filters
             sigma = (lmbda)*0.8
             sigmaSquared = (sigma)**2
 
-            f = np.zeros(((filterSizeR+1-(-filterSizeL)), (filterSizeR+1-(-filterSizeL))))
+            f = np.zeros(((filterSizeR-(-filterSizeL)), (filterSizeR-(-filterSizeL))))
+            #print("F Shape: ", f.shape)
 
             # Apply filter over the receptive field. Rfs are square, thus use same range().
-            for i in range(-filterSizeL, filterSizeR+1):
-                for j in range(-filterSizeL, filterSizeR+1):
+            for i in range(-filterSizeL, filterSizeR):
+                for j in range(-filterSizeL, filterSizeR):
                     # If out of bounds, filter is zero
-                    if math.sqrt(i**2+j**2) > rfsizes[k]/2:
+                    if math.sqrt(i**2+j**2) > filterSize/2:
                         e = 0
                     else:
                         # X coordinate for the filter
@@ -57,14 +60,29 @@ def buildV1Cells(orientations, rfsizes, div):
                         # Y coordinate for the filter
                         y = i*math.sin(theta) + j*math.cos(theta)
                         # Filter at that x,y coordinate
-                        e = math.exp(-((x**2)+(gamma**2)*(y**2))/(2*sigmaSquared))*math.cos(2*math.pi*x/lmbda)
-                    f[j+center-1][i+center-1] = e
+                        e = math.exp(-((x**2)+((gamma**2)*(y**2)))/(2*sigmaSquared))*math.cos(2*math.pi*x/lmbda)
+                    #print("J, I: ", j+center, i+center)
+                    f[j+center][i+center] = e
             # Normalize
             f = f - np.mean(f)
             f = f/np.sqrt(np.sum(f**2))
+            #print(filterSizes.shape)
 
             # Ith filter
-            #print(numOrientations, " ", k, " ", o)
             iFilter = numOrientations*(k) + o
             filters[0:filterSize**2, iFilter] = np.reshape(f, (filterSize**2))
             filterSizes[iFilter] = filterSize
+
+    np.set_printoptions(precision=4)
+    numCells = filters.shape[0]
+    print(numCells)
+    SIDE = np.ceil(np.sqrt(numCells)).astype(int)
+    RFSIZE = int(np.sqrt(filters.shape[1]))
+
+    ax = plt.subplot(SIDE, SIDE, 505 + 1)
+    ax.matshow(np.reshape(filters[505, :], (RFSIZE, RFSIZE)), cmap='Greys_r')
+    ax.set_axis_off()
+
+    plt.draw()
+    #imgplot = plt.imshow(filterSizes, cmap=plt.get_cmap('gray'))
+    plt.savefig('RFs.png', bbox_inches='tight')
