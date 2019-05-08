@@ -15,11 +15,16 @@ img = cv2.imread(filename)
 
 
 print("Building V1 Filters")
+
+
 # 4 orientations for gabor filters
 orientations = np.array([90, -45, 0, 45])
 # Initialize the different receptive field sizes
 rfsizes = np.arange(7, 41, 2)
 # Initialize scaling factors, tuning the wavelength of the sinusoidal factor 'lambda' in relation to each of the rfsizes
 div = np.arange(4, 3.195, -0.05)
+
+
+# Build V1 Simple Cells
 v1SimpleCells.v1SimpleCells(orientations, rfsizes, div)
 #print(v1SimpleCells.filters)
