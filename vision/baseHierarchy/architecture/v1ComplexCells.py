@@ -3,6 +3,7 @@ import math
 from util import sumFilter
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
+from scipy.signal import convolve2d
 
 
 
@@ -31,59 +32,67 @@ Returns:
 """
 
 
-def v1ComplexCells(img, filters, filterSizes, receptiveFieldSize, cellScaleRange, v2Overlap, includeBorders):
+def v1ComplexCells(img, filters, filterSizes, receptiveFieldSize, cellScaleRange, v2Overlap):
 
     # Size of scale bands, the filter sizes over which a max is taken to get the complex cell response
-    nBands = np.size(cellScaleRange)
+    nBands = np.size(cellScaleRange)-1
+    # print(nBands)
     # Last element in c1Scale is max scale
-    nScales = cellScaleRange[-1]
+    nScales = cellScaleRange[-1]-1
+    # print(nScales)
     # Number of filters complex cells max over = #filterSizes/nScales
     nFilters = int(math.floor(np.size(filterSizes)/nScales))
-
-    # Visualize each filter
-    spec = gridspec.GridSpec(nrows=5, ncols=39)
-    fig = plt.figure()
+    # print(nFilters)
 
     scalesInThisBand = []
     # Define the scale bounds of each band
     for i in range(nBands):
-        scalesInThisBand.append(np.array([cellScaleRange[i], cellScaleRange[i + 1]]))
+        scalesInThisBand.append(np.array([cellScaleRange[i], cellScaleRange[i+1]-1]))
 
     # Rebuild all the filters of all sizes
     nFilts = np.size(filterSizes)
-    # Square filter?
+    # Our unpacked square filters
     sqFilter = []
     for i in range(nFilts):
-        sqFilter.append(np.reshape(filters[1:filterSizes(i)**2, 1], (filterSizes(i), filterSizes(i))))
+        intFiltSize = int(filterSizes[i])
+        sqFilter.append(np.reshape(filters[:(intFiltSize**2), i], (intFiltSize, intFiltSize)))
+
         # invert
         sqFilter[i] = np.flipud(sqFilter[i])
         sqFilter[i] = np.fliplr(sqFilter[i])
 
 
-    """
+    ##### Compute all filter responses (v1 simple cells) #####
 
-    # Compute all filter responses (v1 simple cells)
 
     # First calculate normalizations for the usable filter sizes
     imgSquared = img**2
     # Because there are 4 (orientations) of each of the 17 sizes, we just want one of each size
     ufilterSizes = np.unique(filters)
+    print(np.size(ufilterSizes))
     s1Norm = []
-    for i in ufilterSizes:
-        s1Norm[i] = sumFilter.sumFilter(imgSquared, (i-1)/2)**2
+    for i in range(np.size(ufilterSizes)):
+        s1Norm.append(sumFilter.sumFilter(imgSquared, int((i-1)/2))**(1/2))
+        print(i)
         # To avoid a divide by zero later
         s1Norm[i][np.where(s1Norm == 0)] = 1
 
     # Then, apply filters
     iUFilterIndex = 0
-    s1 = []
+    s1 = [[[]]]
     for iBands in range(nBands):
         for iScale in range(len(scalesInThisBand)):
             for iFilt in range(nFilters):
+                print("ibands: ", iBands, ", iScale: ", iScale, ", iFilt: ", iFilt)
+                s1[iBands][iScale][iFilt] = abs(convolve2d(img,sqFilter[iUFilterIndex],mode='same'))
+                # TODO: Remove borders?
+                # Normalize
+                s1[iBands][iScale][iFilt] /= s1Norm[filterSizes[iUFilterIndex]]
                 iUFilterIndex += 1
-                #Finish Later
 
-    # Calculate local pooling (v1 complex cells)
+
+    ##### Calculate local pooling (v1 complex cells) #####
+
 
     # First, pool over scales within band
     # For each band (range)
@@ -101,4 +110,4 @@ def v1ComplexCells(img, filters, filterSizes, receptiveFieldSize, cellScaleRange
             # Finish later
             i = 1
             
-            """
+

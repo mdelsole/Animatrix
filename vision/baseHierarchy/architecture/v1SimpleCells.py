@@ -93,7 +93,7 @@ def v1SimpleCells(orientations, rfsizes, div):
             # F was a 1D array, now we need to reshape it into a square with length/width of filterSize
             filters[0:filterSize**2, iFilter] = np.reshape(f, (filterSize**2))
             filterSizes[iFilter] = filterSize
-
+            print(filters[0:filterSize**2, iFilter])
             # Visualize it
             ax = fig.add_subplot(spec[o,k])
             ax.matshow(np.reshape(filters[:(filterSize**2), iFilter], (filterSize, filterSize)), cmap='Greys_r')
@@ -107,5 +107,8 @@ def v1SimpleCells(orientations, rfsizes, div):
     RFSIZE = int(np.sqrt(filters.shape[0]))
     print(RFSIZE)
 
+
     plt.draw()
     plt.savefig('RFs.png', bbox_inches='tight')
+
+    return filters, filterSizes
