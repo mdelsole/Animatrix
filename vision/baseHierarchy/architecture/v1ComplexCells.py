@@ -21,8 +21,10 @@ Inputs:
     -filterSizes: Matrix containing sizes of the filters
     
 Pooling over space and scale are done in 1 operation together
-    -cellScale: Defines the scale bounds, i.e. the filter sizes over which a local max is taken to get complex cell 
-     responses. 
+    -cellScale: Defines the scale bands, i.e. the filter sizes over which a local max is taken to get complex cell 
+     responses. Each band contains 2 adjacent filter sizes. Ex: Band 1 contains 7x7 and 9x9
+        -The scale band index also determines the size of the simple cell neighborhood (#simplecells x #simplecells) 
+        over which the complex cells pool
     -receptiveFieldSize: Receptive field size of the complex cells
     -v2Overlap: Defines the overlap in receptive field between each V2 cell
     
@@ -65,7 +67,7 @@ def v1ComplexCells(img, filters, filterSizes, receptiveFieldSize, cellScaleRange
     ##### Compute all filter responses (v1 simple cells) #####
 
 
-    # First calculate normalizations for the usable filter sizes
+    """"# First calculate normalizations for the usable filter sizes
     imgSquared = img**2
     # Because there are 4 (orientations) of each of the 17 sizes, we just want one of each size
     ufilterSizes = np.unique(filters)
@@ -76,18 +78,20 @@ def v1ComplexCells(img, filters, filterSizes, receptiveFieldSize, cellScaleRange
         print(i)
         # To avoid a divide by zero later
         s1Norm[i][np.where(s1Norm == 0)] = 1
+    """
 
     # Then, apply filters
     iUFilterIndex = 0
+    print(np.size(sqFilter))
     s1 = [[[]]]
     for iBands in range(nBands):
         for iScale in range(len(scalesInThisBand)):
             for iFilt in range(nFilters):
                 print("ibands: ", iBands, ", iScale: ", iScale, ", iFilt: ", iFilt)
-                s1[iBands][iScale][iFilt] = abs(convolve2d(img,sqFilter[iUFilterIndex],mode='same'))
+                s1.append(abs(convolve2d(img,sqFilter[iUFilterIndex],mode='same')))
                 # TODO: Remove borders?
                 # Normalize
-                s1[iBands][iScale][iFilt] /= s1Norm[filterSizes[iUFilterIndex]]
+                #s1[iBands][iScale][iFilt] /= s1Norm[filterSizes[iUFilterIndex]]
                 iUFilterIndex += 1
 
 
