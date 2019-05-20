@@ -16,99 +16,40 @@ orientations (4 orientations per scale) while the outer loop runs through scales
 """
 
 
-def v1SimpleCells(orientations, rfsizes, div):
+def v1SimpleCells(size, wavelength, orientation):
+    """Create a single gabor filter.
+        Parameters
+        ----------
+        size : int
+            The size of the filter, measured in pixels. The filter is square, hence
+            only a single number (either width or height) needs to be specified.
+        wavelength : float
+            The wavelength of the grating in the filter, relative to the half the
+            size of the filter. For example, a wavelength of 2 will generate a
+            Gabor filter with a grating that contains exactly one wave. This
+            determines the "tightness" of the filter.
+        orientation : float
+            The orientation of the grating in the filter, in degrees.
+        Returns
+        -------
+        filt : ndarray, shape (size, size)
+            The filter weights.
+        """
+    lambda_ = size * 2. / wavelength
+    sigma = lambda_ * 0.8
+    gamma = 0.3  # spatial aspect ratio: 0.23 < gamma < 0.92
+    theta = np.deg2rad(orientation + 90)
 
-    numOrientations = np.size(orientations)
-    print("numOrientations: ", numOrientations)
-    numRfsizes = np.size(rfsizes)
-    print("numRFsizes: ", numRfsizes)
-    # Times 2 because 2 phases
-    numFilters = numRfsizes*numOrientations
-    print("numFilters: ", numFilters)
+    # Generate Gabor filter
+    x, y = np.mgrid[:size, :size] - (size // 2)
+    rotx = x * np.cos(theta) + y * np.sin(theta)
+    roty = -x * np.sin(theta) + y * np.cos(theta)
+    filt = np.exp(-(rotx ** 2 + gamma ** 2 * roty ** 2) / (2 * sigma ** 2))
+    filt *= np.cos(2 * np.pi * rotx / lambda_)
+    filt[np.sqrt(x ** 2 + y ** 2) > (size / 2)] = 0
 
-    # Visualize each filter
-    spec = gridspec.GridSpec(nrows=5, ncols=39)
-    fig = plt.figure()
+    # Normalize the filter
+    filt = filt - np.mean(filt)
+    filt = filt / np.sqrt(np.sum(filt ** 2))
 
-    # Arrays: [how many down][how many across]
-
-    # Spatial aspect ratio. Controls the height of the function
-    gamma = 0.3
-    # Array of the filter sizes (17 different sets of 4 orientations, 1 for each rfsize)
-    filterSizes = np.zeros((numFilters,1))
-    print(filterSizes.shape)
-    # Storage place for the finalized filters
-    # Column = biggest rfsize, squared because rfs are square. Row = for each different rfsize
-    filters = np.zeros((np.max(rfsizes)**2,numFilters))
-
-    for k in range(numRfsizes):
-        for o in range(numOrientations):
-            # Angle
-            theta = orientations[o]*math.pi/180
-            # Size of current filter
-            filterSize = rfsizes[k]
-            # Center of filter, i.e. midpoint
-            center = int(math.ceil(filterSize/2))
-            # print("Center: ", center)
-            # Size on the left and right. Used for location. -1 b/c coordinates start at 0
-            filterSizeL = center-1
-            # print("filterSizeL: ", filterSizeL)
-            filterSizeR = filterSize-filterSizeL-1
-            # print("filterSizeR: ", filterSizeL)
-            # Lambda = wavelength. Larger wavelengeth = thicker stripes. We make lambda proportional to the filter size
-            # because we want thicker stripes when we increase the size of the filter
-            lmbda = (filterSize*2)/div[k]
-            # print("Lambda: ", lmbda)
-            # Lower sigma = sharper edged filters, higher sigma = blurry edged filters
-            sigma = (lmbda)*0.8
-            sigmaSquared = (sigma)**2
-
-            f = np.zeros(((filterSizeR-(-filterSizeL)+1), (filterSizeR-(-filterSizeL)+1)))
-            # print("F Shape: ", f.shape)
-
-            # Form the filter (draw it) over the receptive field. Rfs are square, thus use same range().
-            for i in range(-filterSizeL, filterSizeR+1):
-                for j in range(-filterSizeL, filterSizeR+1):
-                    # If out of bounds, filter is zero
-                    if math.sqrt(i**2+j**2) > filterSize/2:
-                        e = 0
-                    else:
-                        # X coordinate for the filter
-                        x = i*math.cos(theta) - j*math.sin(theta)
-                        # Y coordinate for the filter
-                        y = i*math.sin(theta) + j*math.cos(theta)
-                        # Filter at that x,y coordinate. This is the equation for a gabor filter
-                        e = math.exp(-((x**2)+((gamma**2)*(y**2)))/(2*sigmaSquared))*math.cos(2*math.pi*x/lmbda)
-                    # print("J, I: ", j+center, i+center)
-                    f[j+center-1,i+center-1] = e
-            # Normalize
-            f = f - np.mean(f)
-            f = f/np.sqrt(np.sum(f**2))
-            # print(filterSizes.shape)
-
-            # Ith filter
-            iFilter = numOrientations*(k) + o
-            # print("FilterSize: ", filterSize)
-            # print(filterSizes)
-            # F was a 1D array, now we need to reshape it into a square with length/width of filterSize
-            filters[0:filterSize**2, iFilter] = np.reshape(f, (filterSize**2))
-            filterSizes[iFilter] = filterSize
-            print(filters[0:filterSize**2, iFilter])
-            # Visualize it
-            ax = fig.add_subplot(spec[o,k])
-            ax.matshow(np.reshape(filters[:(filterSize**2), iFilter], (filterSize, filterSize)), cmap='Greys_r')
-            ax.set_axis_off()
-
-    #print(filters[:,0])
-    print("Filters: ", filters.shape)
-    print("FilterSizes: ", filterSizes.shape)
-    numCells = filters.shape[1]
-    print("NumFilters: ", numCells)
-    RFSIZE = int(np.sqrt(filters.shape[0]))
-    print(RFSIZE)
-
-
-    plt.draw()
-    plt.savefig('RFs.png', bbox_inches='tight')
-
-    return filters, filterSizes
+    return filt
