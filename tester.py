@@ -13,9 +13,7 @@ print('Constructing model')
 model = process.visualSystem('./universal_patch_set.mat')
 
 # A folder with example images
-example_images = datasets.ImageFolder(
-    './example_images/',
-    transform=transforms.Compose([
+example_images = datasets.ImageFolder('./example_images/', transform=transforms.Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
         transforms.Lambda(lambda x: x * 255),

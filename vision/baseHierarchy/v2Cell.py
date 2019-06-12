@@ -27,6 +27,7 @@ class v2Cell(nn.Module):
         num_patches, num_orientations, size, _ = patches.shape
 
         # Main convolution layer
+        # Conv2d(
         self.conv = nn.Conv2d(in_channels=num_orientations, out_channels=num_orientations * num_patches,
                               kernel_size=size, padding=size // 2, groups=num_orientations, bias=False)
         self.conv.weight.data = torch.Tensor(patches.transpose(1, 0, 2, 3).reshape(1600, 1, size, size))

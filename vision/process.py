@@ -21,6 +21,7 @@ class visualSystem(nn.Module):
 
         # Create the v1 simple cells
         # Each "cell" is a layer of cells of all the different orientations at the particular size
+        # We adjust the wavelength so it fits nicely with the increase in rfsize
         self.v1SimpleCells = [
             v1SimpleCell.v1SimpleCell(size=7, wavelength=4),
             v1SimpleCell.v1SimpleCell(size=9, wavelength=3.95),
@@ -81,27 +82,30 @@ class visualSystem(nn.Module):
             self.add_module('c2_%d' % i, cell)
 
     def run_all_layers(self, img):
-        """Compute the activation for each layer.
-        Parameters
-        ----------
-        img : Tensor, shape (batch_size, 1, height, width)
-            A batch of images to run through the model
-        Returns
-        -------
-        s1_outputs : List of Tensors, shape (batch_size, num_orientations, height, width)
-            For each scale, the output of the layer of S1 units.
-        c1_outputs : List of Tensors, shape (batch_size, num_orientations, height, width)
-            For each scale, the output of the layer of C1 units.
-        s2_outputs : List of lists of Tensors, shape (batch_size, num_patches, height, width)
-            For each C1 scale and each patch scale, the output of the layer of
-            S2 units.
-        c2_outputs : List of Tensors, shape (batch_size, num_patches)
-            For each patch scale, the output of the layer of C2 units.
+        """
+        Compute the activation for each layer.
+        Parameters:
+            -img: A batch of images to run through the model
+                -Tensor, shape = (batch_size, 1, height, width)
+        Returns:
+            -s1_outputs: List of the output of v1 simple cells at each scale
+                -List of Tensors, shape = (batch_size, num_orientations, height, width)
+            -c1_outputs: List of the output of v1 complex cells at each scale
+                -List of Tensors, shape (batch_size, num_orientations, height, width)
+            -s2_outputs: The output of v2 cells both for each C1 scale and for each patch scale
+                -List of lists of Tensors, shape = (batch_size, num_patches, height, width)
+            -c2_outputs: For each patch scale, the output of the layer of C2 units.
+                -List of Tensors, shape = (batch_size, num_patches)
         """
         s1_outputs = [s1(img) for s1 in self.v1SimpleCells]
 
         # Each C1 layer pools across two S1 layers
         c1_outputs = []
+
+        # Pair a c1 cell to 2 v1 simple cell layers
+
+        # For (each c1 cell, i) in (v1ComplexCells, range(numV1SimpleCells/2)):
+        #   c1Output = c1(
         for c1, i in zip(self.v1ComplexCells, range(0, len(self.v1SimpleCells), 2)):
             c1_outputs.append(c1(s1_outputs[i:i + 2]))
 
