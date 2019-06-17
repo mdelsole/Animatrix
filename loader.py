@@ -11,12 +11,18 @@ from matplotlib import gridspec
 spec = gridspec.GridSpec(nrows=1, ncols=4)
 fig = plt.figure()
 
+import scipy.io
+
 pickle_in = open("output.pkl", "rb")
 example_dict = pickle.load(pickle_in)
+
+print(np.shape(example_dict['s2']))
+
+
 # Visualize it
 for i in range(4):
     ax = fig.add_subplot(spec[0,i])
-    ax.imshow(np.reshape(example_dict['s1'][15][7][i], (250, 250)), cmap='Greys_r')
+    ax.imshow(np.reshape(example_dict['s2'][15][7][i], (250, 250)), cmap='Greys_r')
     ax.set_axis_off()
 
 plt.draw()
