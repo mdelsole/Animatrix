@@ -1,6 +1,10 @@
 import numpy as np
 from torch import nn
 import torch
+import sys
+import matplotlib.pyplot as plt
+
+np.set_printoptions(threshold=np.nan)
 
 
 class v1SimpleCell(nn.Module):
@@ -22,7 +26,6 @@ class v1SimpleCell(nn.Module):
         self.numOrientations = len(orientations)
         self.size = size
 
-        # Use PyTorch's Conv2d as a base object. Each "channel" will be an orientation.
         # nn.Conv2d(in channels, out channels, filter size)
         # In channels = the image, Out channels = each filter orientation (produce a filtered image for each filter)
         self.gabor = nn.Conv2d(1, self.numOrientations, size, padding=size // 2, bias=False)

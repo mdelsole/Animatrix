@@ -23,7 +23,7 @@ class v1ComplexCell(nn.Module):
         self.local_pool = nn.MaxPool2d(size, stride=size // 2, padding=size // 2)
 
     def forward(self, s1_outputs):
-        # Put all outputs (unsqueezed i.e. put in their own array) into one array
+        # Put all outputs into one array
         s1_outputs = torch.cat([out.unsqueeze(0) for out in s1_outputs], 0)
 
         # Max pool over all scales
