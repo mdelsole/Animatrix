@@ -3,9 +3,9 @@
 import cv2
 from scipy.io import loadmat
 from torch import nn
-import torch
+import numpy as np
 from util import normalize, sampleImage, pca
-from vision.baseHierarchy import v1ComplexCell, v2Cell, v4Cell, v1SimpleCell
+from vision.algorithms import ica
 
 path = "/Users/Michael/Documents/Animatrix/Opencountry/"
 
@@ -23,8 +23,13 @@ print("Normalizing Data...")
 X = normalize.normalize(X)
 
 print("Doing PCA Dimension Reduction and Whitening Data...")
-V1 = pca.pca(X,nbases1)
-Z = V1 * X
+V1 = pca.pca(X, nbases1)
+Z = np.matmul(V1, X)
+
+print("Starting ICA...")
+w1pca = ica.ica(Z, nbases1)
+# Transform back to original space from whitened space
+W1 = w1pca*V1
 
 
 
