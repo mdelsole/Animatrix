@@ -4,8 +4,13 @@ import cv2
 from scipy.io import loadmat
 from torch import nn
 import numpy as np
+
+# Import other classes
 from util import normalize, sampleImage, pca
 from vision.algorithms import ica
+from vision import visualizer
+
+np.set_printoptions(threshold=np.nan)
 
 path = "/Users/Michael/Documents/Animatrix/Opencountry/"
 
@@ -29,7 +34,10 @@ Z = np.matmul(V1, X)
 print("Starting ICA...")
 w1pca = ica.ica(Z, nbases1)
 # Transform back to original space from whitened space
-W1 = w1pca*V1
+W1 = np.matmul(w1pca, V1)
+# Compute A using pseudoinverse (inverting canonical preprocessing is tricky)
+A1 = np.linalg.pinv(W1)
+np.save('S1.npy', A1)
 
-
+visualizer.visualize(A1, 6, 6)
 

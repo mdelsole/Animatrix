@@ -13,13 +13,13 @@ def ica(Z, n):
 
     ######## Parameters ########
     convergenceCriterion = 1e-4
-    maxIters = 2000
+    # Take to 2000
+    maxIters = 20
 
 
     ######## Initialize ########
     # Create random initial value of W, and orthogonalize it
     W = orthogonalizeRows.orthogonalizeRows(np.random.randn(n, np.size(Z, 0)))
-    print(W)
     # Read the sampleSize from data matrix
     N = np.size(Z,1)
 
@@ -51,4 +51,4 @@ def ica(Z, n):
         if np.linalg.norm(np.abs(np.matmul(W, np.transpose(wOld)))-np.eye(n), 'fro') < convergenceCriterion*n:
             notConverged = False
 
-
+    return W
