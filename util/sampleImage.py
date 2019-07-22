@@ -19,6 +19,7 @@ def sampleImage(samples, winSize, directory):
     numImages = len(fileList)
     # How many samples to take based on number of images
     getSample = round(samples / numImages)
+
     samples = getSample * numImages
 
     # Intialize the matrix to hold the patches
@@ -34,8 +35,8 @@ def sampleImage(samples, winSize, directory):
         # Sample patches in random locations
         width = np.size(img, 1)
         height = np.size(img, 0)
-        posx = np.floor(np.random.rand(1, getSample) * (width - winSize - 1)) + 1
-        posy = np.floor(np.random.rand(1, getSample) * (height - winSize - 1)) + 1
+        posx = np.floor(np.random.rand(1, getSample) * (width - winSize))
+        posy = np.floor(np.random.rand(1, getSample) * (height - winSize))
         for j in range(getSample):
             X[:, sampleCounter] = np.reshape(img[int(posy[0,j]):(int(posy[0,j]) + winSize),
                                              int(posx[0,j]):(int(posx[0,j]) + winSize)], (winSize**2))

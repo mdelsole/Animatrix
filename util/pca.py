@@ -12,6 +12,7 @@ Output:
 """
 
 import numpy as np
+import scipy as scp
 
 
 def pca(X, k):
@@ -20,7 +21,8 @@ def pca(X, k):
 
     # TODO: Could be problems here
 
-    D, E = np.linalg.eig(covarianceMatrix)
-    dsqrtinv = np.real(np.abs(D)**(-0.5))
+    # Find k largest eigenvalues
+    D, E = scp.linalg.eigh(covarianceMatrix, eigvals=(np.size(covarianceMatrix,1)-k, np.size(covarianceMatrix,1)-1))
+    dsqrtinv = np.real(D.astype(complex)**(-0.5))
     V = np.matmul(np.diag(dsqrtinv), np.transpose(E))
     return V

@@ -14,7 +14,7 @@ def ica(Z, n):
     ######## Parameters ########
     convergenceCriterion = 1e-4
     # Take to 2000
-    maxIters = 20
+    maxIters = 200
 
 
     ######## Initialize ########
@@ -40,10 +40,11 @@ def ica(Z, n):
         Y = np.matmul(W, Z)
         # Use tanh non-linearity
         gY = np.tanh(Y)
+        #print(np.matmul(gY, (np.transpose(Z) / N)))
 
         # The fixed-point step
         # Note that 1-(tanh y)^2 is the derivative of the function tanh y
-        W = np.matmul(gY, np.divide(np.transpose(Z), N)) - (np.matmul(np.transpose(np.mean(1-np.transpose(gY)**2, 0, keepdims=True)),
+        W = np.matmul(gY, (np.transpose(Z)/N)) - (np.matmul(np.transpose(np.mean(1-(np.transpose(gY)**2), 0, keepdims=True)),
                                                                       np.ones((1, np.size(W,1))))*W)
         # Orthogonalize rows or decorrelate estimated components
         W = orthogonalizeRows.orthogonalizeRows(W)
@@ -52,3 +53,4 @@ def ica(Z, n):
             notConverged = False
 
     return W
+

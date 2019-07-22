@@ -1,6 +1,8 @@
 import numpy as np
 
-X = np.random.randn(2,4)
+X = np.random.randint(1,4,(3,3))
 print(X)
-np.save('patches.npy', X)
+print(X**2)
+print(np.power(X,2))
+
 
