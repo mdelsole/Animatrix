@@ -9,16 +9,18 @@ import numpy as np
 from util import normalize, sampleImage, pca
 from vision.algorithms import ica
 from vision import visualizer
+from vision.baseHierarchy import v1ComplexCell
 
 np.set_printoptions(threshold=np.nan)
 
 path = "/Users/Michael/Documents/Animatrix/Opencountry/"
+pathFilters = "/Users/Michael/Documents/Animatrix/vision/filters/"
 
 ######## V1 Simple Cells ########
 
 print("Learning V1 Simple Cells")
 
-#Paramaters
+# Parameters
 patchsz1= 10
 nbases1 = 36
 samplesize1 = 50000
@@ -48,6 +50,19 @@ A1 = np.linalg.pinv(W1)
 np.save('S1.npy', A1)
 
 # visualizer.visualize(A1, 6, 6)
+
+######## V1 Complex Cells ########
+
+# Parameters
+ratio1 = 3
+minImgSize = 120
+
+print("Learning V1 Complex Cells")
+C1Inputs = np.load('S1.npy')
+v1ComplexCell.v1ComplexCell(path, pathFilters, np.transpose(w1pca), V1, ratio1, minImgSize)
+
+
+
 
 
 

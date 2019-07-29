@@ -14,7 +14,7 @@ def ica(Z, n):
     ######## Parameters ########
     convergenceCriterion = 1e-4
     # Take to 2000
-    maxIters = 200
+    maxIters = 2
 
 
     ######## Initialize ########
