@@ -61,6 +61,8 @@ print("Learning V1 Complex Cells")
 C1Inputs = np.load('S1.npy')
 v1ComplexCell.v1ComplexCell(path, pathFilters, np.transpose(w1pca), V1, ratio1, minImgSize)
 
+######## V2 Simple Cells ########
+
 
 
 

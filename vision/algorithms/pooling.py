@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def pool(map, rowRatio, colRatio, rowRest, colRest, poolMethod):
+def pool(map, rowRatio, colRatio, rowRest, colRest):
     row, col, numBases = np.size(map)
 
     # Trim the borders
@@ -18,3 +18,9 @@ def pool(map, rowRatio, colRatio, rowRest, colRest, poolMethod):
         print("Trimming is incorrect")
 
     # Use im2col
+    map2d = np.reshape(map, (row, col*numBases))
+
+    # Using max pool method; may implement avg later
+    temp = np.max()
+    C1 = np.reshape(temp, (row/rowRatio,col/colRatio,numBases))
+    return C1

@@ -34,7 +34,7 @@ def v1ComplexCell(directory, patchDirectory, bases, pmat, ratio, minImgSize):
         S1map = v1SimpleCell.v1SimpleCell(img, pmat, bases, np.sqrt(np.size(pmat, 1)))
 
         # Calculate C1 map
-        C1map = pooling.pool(S1map, ratio, ratio, np.size(S1map, 0)%ratio, np.size(S1map, 1)%ratio, 'max')
+        C1map = pooling.pool(S1map, ratio, ratio, np.size(S1map, 0)%ratio, np.size(S1map, 1)%ratio)
 
     np.save('C1.npy', C1map)
 
